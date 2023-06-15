@@ -4,9 +4,23 @@ use std::error::Error;
 pub fn run(app_config: Config) -> Result<(), Box<dyn Error>> {
     let file_content = fs::read_to_string(app_config.file_path)?;
 
-    println!("With contents:\n{}", file_content);
+    for line in search(&app_config.query, &file_content) {
+        println!("{line}")
+    }
 
     Ok(())
+}
+
+pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+    let mut results = Vec::new();
+
+    for line in contents.lines() {
+        if line.contains(query) {
+            results.push(line)
+        }
+    }
+
+    results
 }
 
 pub struct Config {
@@ -24,5 +38,18 @@ impl Config {
         let file_path = args[2].clone();
 
         Ok(Config { query, file_path })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn one_result() {
+        let query = "duct";
+        let contents = "Rust:\nsafe, fast, productive.\nPick three.";
+
+        assert_eq!(vec!["safe, fast, productive."], search(query, contents));
     }
 }

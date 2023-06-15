@@ -12,9 +12,6 @@ fn main() {
         process::exit(1);
     });
 
-    println!("Searching for pattern '{}'", app_config.query);
-    println!("In file '{}'\n", app_config.file_path);
-
     if let Err(e) = minigrep::run(app_config) {
         println!("Application error: {e}");
 
